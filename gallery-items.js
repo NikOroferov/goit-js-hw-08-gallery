@@ -77,6 +77,7 @@ jsGallery.insertAdjacentHTML('beforeend', createPhotoCards(images));
 jsGallery.addEventListener('click', modalOpen);
 btnCloseModal.addEventListener('click', modalClose);
 lightboxOverlay.addEventListener('click', modalClose);
+window.addEventListener('keydown', onKey)
 
 
 function createPhotoCards(images) {
@@ -100,7 +101,6 @@ function createPhotoCards(images) {
       .join('');
       
 }
-    
 
 function getUrl(event) {
   lightboxImage.src = event.target.dataset.source;
@@ -122,4 +122,10 @@ function modalClose(event) {
   lightbox.classList.remove('is-open');
   lightboxImage.src = '';
   lightboxImage.alt = '';
+}
+
+function onKey(event) {
+  if (event.code === 'Escape') {
+    modalClose();
+  }
 }
