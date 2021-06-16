@@ -77,7 +77,7 @@ jsGallery.insertAdjacentHTML('beforeend', createPhotoCards(images));
 jsGallery.addEventListener('click', modalOpen);
 btnCloseModal.addEventListener('click', modalClose);
 lightboxOverlay.addEventListener('click', modalClose);
-window.addEventListener('keydown', onKey)
+window.addEventListener('keydown', onEscClose)
 
 
 function createPhotoCards(images) {
@@ -102,9 +102,9 @@ function createPhotoCards(images) {
       
 }
 
-function getUrl(event) {
-  lightboxImage.src = event.target.dataset.source;
-  lightboxImage.alt = event.target.alt;
+function getUrl(event, src, alt) {
+  lightboxImage.src = src;
+  lightboxImage.alt = alt;
 }
 
 function modalOpen(event) {
@@ -115,16 +115,15 @@ function modalOpen(event) {
   }
 
   lightbox.classList.add('is-open');
-  getUrl(event);
+  getUrl(event, event.target.dataset.source, event.target.alt);
 }
 
 function modalClose(event) {
   lightbox.classList.remove('is-open');
-  lightboxImage.src = '';
-  lightboxImage.alt = '';
+  getUrl(event, '', '');
 }
 
-function onKey(event) {
+function onEscClose(event) {
   if (event.code === 'Escape') {
     modalClose();
   }
