@@ -64,24 +64,24 @@ const images = [
   },
 ];
 
-// console.table(images);
-
 const jsGallery = document.querySelector('.gallery.js-gallery');
 const lightbox = document.querySelector('.lightbox');
 const lightboxOverlay = document.querySelector('.lightbox__overlay');
 const lightboxImage = document.querySelector('.lightbox__image');
 const btnCloseModal = document.querySelector('.lightbox__button')
 
+let currentIndex;
+
 jsGallery.insertAdjacentHTML('beforeend', createPhotoCards(images));
 
+jsGallery.addEventListener('click', getCurrentIndex);
 jsGallery.addEventListener('click', modalOpen);
 btnCloseModal.addEventListener('click', modalClose);
 lightboxOverlay.addEventListener('click', modalClose);
-window.addEventListener('keydown', onEscClose)
-
+window.addEventListener('keydown', onEscClose);
 
 function createPhotoCards(images) {
-  return images.map(({ preview, original, description }) => {
+  return images.map(({ preview, original, description }, idx) => {
     return `
     <li class="gallery__item">
         <a
@@ -92,6 +92,7 @@ function createPhotoCards(images) {
             class="gallery__image"
             src="${preview}"
             data-source="${original}"
+            data-index=${idx}
             alt="${description}"
           />
         </a>
@@ -99,32 +100,75 @@ function createPhotoCards(images) {
         `;
       })
       .join('');
-      
-}
+};
 
-function getUrl(event, src, alt) {
+function getUrl(src, alt) {
   lightboxImage.src = src;
   lightboxImage.alt = alt;
-}
+};
 
 function modalOpen(event) {
   event.preventDefault();
-
   if (!event.target.classList.contains('gallery__image')) {
     return;
-  }
+  };
 
   lightbox.classList.add('is-open');
-  getUrl(event, event.target.dataset.source, event.target.alt);
-}
 
-function modalClose(event) {
+  getUrl(event.target.dataset.source, event.target.alt);
+  window.addEventListener('keydown', onKeyPress);
+
+};
+
+function onKeyPress(event) {
+  if (event.code === 'ArrowRight') {
+    onArrowRight()
+  } else if (event.code === 'ArrowLeft') {
+    onArrowLeft()
+  };
+};
+
+function modalClose() {
   lightbox.classList.remove('is-open');
-  getUrl(event, '', '');
-}
+  getUrl('', '');
+};
 
 function onEscClose(event) {
   if (event.code === 'Escape') {
     modalClose();
   }
-}
+};
+
+function getCurrentIndex(event) {
+  if (!event.target.classList.contains('gallery__image')) {
+    return;
+  };
+
+  return currentIndex = Number(event.target.dataset.index);
+};
+
+function onArrowRight() {
+  if (currentIndex + 1 > images.length - 1) {
+    currentIndex = 0;
+  } else {
+    currentIndex += 1;
+  };
+
+  getUrl(
+    images[currentIndex].original,
+    images[currentIndex].description
+  );
+};
+
+function onArrowLeft() {
+  if (currentIndex - 1 < 0) {
+    currentIndex = images.length - 1;
+  } else {
+    currentIndex -= 1;
+  };
+
+  getUrl(
+    images[currentIndex].original,
+    images[currentIndex].description
+  );
+};
